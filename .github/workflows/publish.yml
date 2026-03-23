@@ -30,13 +30,23 @@ jobs:
       - name: Check distributions
         run: python -m twine check dist/*
 
+      - name: Upload distributions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+
       - name: Upload distributions to GitHub Release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.event.release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/*.whl
             dist/*.tar.gz
+          fail_on_unmatched_files: true
+          generate_release_notes: false
 
       - name: Publish distributions to PyPI
         env:

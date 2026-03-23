@@ -10,6 +10,11 @@ on:
         required: true
         default: false
         type: boolean
+      release_tag:
+        description: Existing Git tag to upload assets to when running manually
+        required: false
+        default: ''
+        type: string
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -48,14 +53,21 @@ jobs:
             dist/*.tar.gz
 
       - name: Upload distributions to GitHub Release
-        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.upload_to_release)
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.upload_to_release && inputs.release_tag != '')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.release_tag }}
           files: |
             dist/*.whl
             dist/*.tar.gz
           fail_on_unmatched_files: true
           generate_release_notes: false
+
+      - name: Validate manual release tag input
+        if: github.event_name == 'workflow_dispatch' && inputs.upload_to_release && inputs.release_tag == ''
+        run: |
+          echo "upload_to_release=true 时必须填写 release_tag"
+          exit 1
 
       - name: Publish distributions to PyPI
         env:

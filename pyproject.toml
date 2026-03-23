@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "py-har-mcp"
+version = "0.1.1"
+description = "Python MCP server for parsing and analyzing HAR files"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Roo" }
+]
+dependencies = [
+  "fastmcp>=2.0.0"
+]
+
+[project.scripts]
+py-har-mcp = "py_har_mcp.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["py_har_mcp*"]

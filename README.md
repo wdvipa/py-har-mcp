@@ -105,6 +105,32 @@ py-har-mcp
 python -m py_har_mcp --http --port 8000
 ```
 
+## Automated PyPI Release with GitHub Actions
+
+仓库已提供 GitHub Actions 工作流 [`py-har-mcp/.github/workflows/publish.yml`](py-har-mcp/.github/workflows/publish.yml)，用于自动构建并发布新版本到 PyPI。
+
+### 触发方式
+
+- 发布 GitHub Release 时自动触发
+- 也可以在 GitHub Actions 页面手动触发
+
+### 使用步骤
+
+1. 在 GitHub 仓库的 **Settings > Secrets and variables > Actions** 中新增 Secret：`PYPI_API_TOKEN`
+2. Token 建议使用 PyPI 的项目级或账号级 API Token
+3. 创建一个新的 GitHub Release，工作流就会自动：
+   - 安装构建工具
+   - 构建 sdist 和 wheel
+   - 执行 `twine check`
+   - 上传到 PyPI
+
+### 建议发布流程
+
+1. 更新 [`py-har-mcp/pyproject.toml`](py-har-mcp/pyproject.toml) 中的版本号
+2. 提交代码并推送到 GitHub
+3. 创建对应版本的 Tag / Release
+4. 等待 GitHub Actions 自动发布到 PyPI
+
 ### Available Tools
 
 #### 1. `load_har`
@@ -199,51 +225,20 @@ python -m py_har_mcp --http --port 8000
 
 ## Integration with Claude Desktop
 
-将如下配置加入 Claude Desktop：
+将如下配置加入 Claude Desktop 的 MCP 配置文件：
 
 ```json
 {
   "mcpServers": {
     "py-har-mcp": {
-      "command": "python",
-      "args": [
-        "-m",
-        "py_har_mcp"
-      ],
-      "cwd": "D:\\Project\\py\\har-mcp\\py-har-mcp"
+      "command": "uvx",
+      "args": ["py-har-mcp"]
     }
   }
 }
 ```
 
-## Development
-
-### Running Checks
-
-在 [`py-har-mcp`](py-har-mcp) 目录下执行：
-
-```bash
-python -m compileall py_har_mcp
-```
-
-### Project Structure
-
-```text
-.
-├── pyproject.toml
-├── README.md
-└── py_har_mcp/
-    ├── __init__.py
-    ├── __main__.py
-    ├── models.py
-    ├── parser.py
-    └── server.py
-```
-
-## Dependencies
-
-- [fastmcp](https://github.com/jlowin/fastmcp) - Python MCP server implementation
-- Python standard library - HAR parsing, HTTP fetching, JSON processing
+如果你使用本地源码，也可以改为 `python -m py_har_mcp` 或 `py-har-mcp`。
 
 ## License
 
